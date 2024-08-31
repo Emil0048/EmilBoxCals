@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Triangelport & Volymkalkylator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 350px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: 0 10px;
+        }
+        h2 {
+            text-align: center;
+        }
+        label, input, button {
+            display: block;
+            width: calc(100% - 20px);
+            margin: 0 auto 15px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p.result {
+            text-align: center;
+            font-size: 18px;
+            white-space: pre-line;
+        }
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .svg-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        text {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            fill: #000;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Flex-container for all calculators -->
+    <div class="flex-container">
+
+        <!-- Triangelport-kalkylator -->
+        <div class="container">
+            <h2>Triangelport Kalkylator</h2>
+            <label for="squareSide">Ange kvadratens sidlängd (cm):</label>
+            <input type="number" id="squareSide" placeholder="Ange kvadratens sidlängd">
+            <button onclick="calculateTriangle()">Beräkna Triangel</button>
+            <p class="result" id="triangleResult"></p>
+        </div>
+
+        <!-- Volymkalkylator med bild -->
+        <div class="container">
+            <h2>Volymkalkylator</h2>
+            <label for="height">Ange Höjd (cm):</label>
+            <input type="number" id="height" placeholder="Ange höjd">
+            <label for="length">Ange Längd (cm):</label>
+            <input type="number" id="length" placeholder="Ange längd">
+            <label for="depth">Ange Djup (cm):</label>
+            <input type="number" id="depth" placeholder="Ange djup">
+            <button onclick="calculateVolume()">Beräkna Volym i Liter</button>
+            <p class="result" id="volumeResult"></p>
+
+            <div class="image-container">
+                <img src="https://rockfordfosgate.com/static/images/support/woofer-box-wizard/box_rectangle_in_on.gif" alt="Box Dimensions">
+            </div>
+        </div>
+
+        <!-- Box Dimension Calculator -->
+        <div class="container">
+            <h2>Box Storlek från Volym</h2>
+            <label for="literVolume">Ange Volym (liter):</label>
+            <input type="number" id="literVolume" placeholder="Ange volym i liter">
+            <button onclick="calculateBoxSizes()">Beräkna Boxstorlekar</button>
+            <p class="result" id="boxSizeResult"></p>
+            <div class="svg-box" id="cubeSvg"></div>
+            <div class="svg-box" id="rectSvg"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // Funktion för att beräkna ekvivalent triangelns sidlängd
+        function calculateTriangle() {
+            var squareSide = parseFloat(document.getElementById('squareSide').value);
+            
+            if (isNaN(squareSide) || squareSide <= 0) {
+                document.getElementById('triangleResult').textContent = "Ange en giltig kvadratsidlängd!";
+                return;
+            }
+
+            var squareArea = Math.pow(squareSide, 2);
+            var triangleSide = Math.sqrt((4 * squareArea) / Math.sqrt(3));
+
+            document.getElementById('triangleResult').textContent = 
+                "Ekvivalent Triangelns Sidlängd: " + triangleSide.toFixed(2) + " cm";
+        }
+
+        // Funktion för att beräkna volymen på kuben och omvandla till liter
+        function calculateVolume() {
+            var height = parseFloat(document.getElementById('height').value);
+            var length = parseFloat(document.getElementById('length').value);
+            var depth = parseFloat(document.getElementById('depth').value);
+            
+            if (isNaN(height) || isNaN(length) || isNaN(depth) || height <= 0 || length <= 0 || depth <= 0) {
+                document.getElementById('volumeResult').textContent = "Ange giltiga dimensioner!";
+                return;
+            }
+
+            var volumeCm3 = height * length * depth;
+            var volumeLiters = volumeCm3 / 1000;
+
+            document.getElementById('volumeResult').textContent = 
+                "Volym: " + volumeLiters.toFixed(2) + " liter";
+        }
+
+        // Funktion för att rita en kub som en SVG
+        function drawCubeSvg(cubeSide) {
+            return `
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                    <rect x="10" y="10" width="80" height="80" fill="none" stroke="black" stroke-width="2"></rect>
+                    <text x="30" y="55" fill="black">Sidlängd: ${cubeSide.toFixed(2)} cm</text>
+                </svg>
+            `;
+        }
+
+        // Funktion för att rita en rektangel som en SVG
+        function drawRectSvg(length, height, depth) {
+            return `
+                <svg width="160" height="100" viewBox="0 0 160 100">
+                    <rect x="10" y="10" width="140" height="80" fill="none" stroke="black" stroke-width="2"></rect>
+                    <text x="20" y="40" fill="black">Längd: ${length.toFixed(2)} cm</text>
+                    <text x="20" y="60" fill="black">Höjd: ${height.toFixed(2)} cm</text>
+                    <text x="20" y="80" fill="black">Djup: ${depth.toFixed(2)} cm</text>
+                </svg>
+            `;
+        }
+
+        // Funktion för att beräkna exempel på boxstorlekar från volym och visa dem som SVG-grafik
+        function calculateBoxSizes() {
+            var literVolume = parseFloat(document.getElementById('literVolume').value);
+
+            if (isNaN(literVolume) || literVolume <= 0) {
+                document.getElementById('boxSizeResult').textContent = "Ange en giltig volym!";
+                return;
+            }
+
+            // Konvertera liter till kubikcentimeter
+            var volumeCm3 = literVolume * 1000;
+
+            // Exempel för en kub (lika sidor)
+            var cubeSide = Math.cbrt(volumeCm3); // Kubens sida
+
+            // Exempel för en rektangel (proportioner 2:1:1)
+            var length = Math.cbrt(volumeCm3 * 2); // Dubbel längd för rektangel
+            var height = length / 2; // Hälften som höjd
+            var depth = height; // Djup samma som höjd
+
+            // Rensa tidigare SVG
+            document.getElementById('cubeSvg').innerHTML = drawCubeSvg(cubeSide);
+            document.getElementById('rectSvg').innerHTML = drawRectSvg(length, height, depth);
+        }
+    </script>
+
+</body>
+</html>
